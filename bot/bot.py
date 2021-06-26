@@ -1,4 +1,4 @@
-from config.bot_config import TOKEN, OWNER_IDS, PREFIX, COGS_DIR
+from config.bot_config import TOKEN, OWNER_IDS, PREFIX, COGS_DIR, GUILD_ID, RESEND_CHANNEL_ID
 
 from discord.ext.commands import Bot as BaseBot
 from os.path import splitext, basename
@@ -12,6 +12,9 @@ class Bot(BaseBot):
         self.TOKEN = TOKEN
         self.OWNER_IDS = OWNER_IDS
 
+        self.guild = None
+        self.resend_channel = None
+
         self.ready = False
         intents = Intents().all()
 
@@ -19,6 +22,9 @@ class Bot(BaseBot):
 
     async def on_ready(self):
         if not self.ready:
+            self.guild = self.get_guild(GUILD_ID)
+            self.resend_channel = self.guild.get_channel(RESEND_CHANNEL_ID)
+
             print(f'Logged in as {self.user}')
             self.ready = True
 

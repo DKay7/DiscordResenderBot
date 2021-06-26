@@ -1,5 +1,5 @@
 import pandas as pd
-
+from datetime import datetime as dt
 
 def read_file_to_df(path):
     # TODO check encodings and maybe add headings
@@ -16,7 +16,7 @@ def parse_file(path):
     messages = []
     authors = []
     for row in df.index:
-        datetimes.append(df[0][row])
+        datetimes.append(dt.strptime(df[0][row], "%m/%d/%Y %H:%M:%S.%f"))
         messages.append(df[7][row])
         authors.append(df[8][row])
 
