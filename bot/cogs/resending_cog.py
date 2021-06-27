@@ -27,7 +27,7 @@ class TransitionCog(Cog):
                 print("New file", file)
                 print(result_dict)
 
-                await send_messages(result_dict, self.bot.resend_channel)
+                await send_messages(result_dict, self.bot)
 
 
 def setup(bot):
