@@ -1,33 +1,60 @@
-import os
-from discord.ext import tasks
 from discord.ext.commands import Cog
+from discord.ext import tasks
 
-from config.bot_config import LOG_FILES_DIR
-from utils.parser import parse_file
+from utils.parser import parse_file_content, get_last_file_path
 from utils.sender import send_messages
 
 
 class TransitionCog(Cog):
     def __init__(self, bot):
-        self.bot = bot
-        self.known_files = os.listdir(LOG_FILES_DIR)
+        """
+        Initialize class TransitionCog
+        :param bot: discord.ext.commands.Bot object
+        """
 
-        self.check_new_files.start()
+        self.bot = bot
+        self.file = None
+        self.last_filename = None
+        self.file_bytes_position = 0
+
+        self.check_and_read_new_files.start()
 
     @tasks.loop(seconds=1)
-    async def check_new_files(self):
+    async def check_and_read_new_files(self):
+        """
+        Method which continuously checks if is there a
+        new file or are there new data in existing file.
+        If there are some new data method parses it
+        and sends messages with it
+        """
 
-        new_files_list = os.listdir(LOG_FILES_DIR)
+        file_path = get_last_file_path()
 
-        for file in new_files_list:
-            if file not in self.known_files:
-                self.known_files.append(file)
-                result_dict = parse_file(os.path.join(r"data/", file))
+        if file_path != self.last_filename:
 
-                print("New file", file)
-                print(result_dict)
+            if self.file:
+                self.file.close()
 
-                await send_messages(result_dict, self.bot)
+            self.file = open(file_path, mode="r", encoding="cp1251")
+            self.file_bytes_position = 0
+            self.last_filename = file_path
+
+        self.file.seek(self.file_bytes_position)
+        content = self.file.read()
+        self.file_bytes_position = self.file.tell()
+
+        if content:
+            result_dict = parse_file_content(content)
+            await send_messages(result_dict, self.bot)
+
+    @check_and_read_new_files.before_loop
+    async def before_check_new_files(self):
+        """
+        Called before "check_and_read_new_files"
+        and waiting for discord.bot to becomes ready to work.
+        """
+        print('Bot is starting...')
+        await self.bot.wait_until_ready()
 
 
 def setup(bot):
