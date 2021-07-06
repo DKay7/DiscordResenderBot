@@ -1,11 +1,12 @@
+from datetime import datetime
 from glob import glob
 from os.path import splitext, basename
 
 from discord.ext.commands import Bot as BaseBot
 from discord import Intents
 
-from config.bot_config import TOKEN, OWNER_IDS, PREFIX, COGS_DIR, GUILD_ID
-from config.parser_config import RESEND_CHANNEL_ID
+from config.bot_config import TOKEN, OWNER_IDS, PREFIX, COGS_DIR, GUILD_ID, HEART_BEAT_TIMEOUT
+from config.parser_config import DEFAULT_RESEND_CHANNEL_ID
 
 
 class Bot(BaseBot):
@@ -26,7 +27,8 @@ class Bot(BaseBot):
 
         super(Bot, self).__init__(command_prefix=self.PREFIX,
                                   owner_ids=self.OWNER_IDS,
-                                  intents=intents)
+                                  intents=intents,
+                                  heartbeat_timeout=HEART_BEAT_TIMEOUT)
 
     async def on_ready(self):
         """
@@ -35,7 +37,7 @@ class Bot(BaseBot):
 
         if not self.ready:
             self.guild = self.get_guild(GUILD_ID)
-            self.resend_channel = self.guild.get_channel(RESEND_CHANNEL_ID)
+            self.resend_channel = self.guild.get_channel(DEFAULT_RESEND_CHANNEL_ID)
 
             print(f'Logged in as {self.user}')
             self.ready = True
@@ -72,4 +74,4 @@ class Bot(BaseBot):
         """
         Called when bot is disconnected
         """
-        print("Bot disconnected")
+        print(f"Bot disconnected {datetime.now()}")

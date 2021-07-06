@@ -4,7 +4,7 @@ from io import StringIO
 
 import pandas as pd
 
-from config.parser_config import LOG_FILES_DIR, LOG_FILE_EXTENSION
+from config.parser_config import LOG_FILES_DIR, LOG_FILE_EXTENSION, TIMEZONE
 
 
 def get_last_file_path():
@@ -46,7 +46,10 @@ def parse_file_content(content):
     authors = []
 
     for row in dataframe.index:
-        datetimes.append(dt.strptime(dataframe[0][row], "%m/%d/%Y %H:%M:%S.%f"))
+
+        date_and_time = dt.strptime(dataframe[0][row], "%m/%d/%Y %H:%M:%S.%f")
+        datetimes.append(TIMEZONE.localize(date_and_time))
+
         chat_types.append(dataframe[1][row])
         coordinates.append((dataframe[4][row], dataframe[5][row]))
         messages.append(dataframe[7][row])

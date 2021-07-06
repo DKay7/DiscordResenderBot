@@ -23,4 +23,6 @@ async def send_messages(parsed_dict, bot):
         embed.set_author(name=authors[index])
 
         channel = get_chat_by_location(locations[index], bot)
-        await channel.send(embed=embed)
+
+        if channel:
+            await channel.send(embed=embed)

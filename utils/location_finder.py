@@ -2,7 +2,7 @@ from discord.ext.commands import Bot
 from matplotlib.path import Path
 
 from config.location_config import LOCATION_CHATS
-
+from config.parser_config import SEND_DEFAULTS
 
 def get_chat_by_location(location, bot: Bot):
     """
@@ -20,4 +20,5 @@ def get_chat_by_location(location, bot: Bot):
 
             return channel
 
-    return bot.resend_channel
+    if SEND_DEFAULTS:
+        return bot.resend_channel
