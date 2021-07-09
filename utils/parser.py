@@ -25,8 +25,9 @@ def read_file_to_df(content: str):
     :param content: string object with content which will be parsed to dataframe object
     """
     content_io = StringIO(content)
-    dataframe = pd.read_csv(content_io, encoding="cp1251", index_col=False, header=None,
-                            error_bad_lines=False)
+    dataframe = pd.read_csv(content_io, encoding="cp1251", index_col=False,
+                            engine="python", header=None,
+                            error_bad_lines=False, quoting=3)
 
     return dataframe
 

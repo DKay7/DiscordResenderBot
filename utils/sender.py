@@ -15,7 +15,11 @@ async def send_messages(parsed_dict, bot):
     datetimes, chat_types, locations, messages, authors = parsed_dict.values()
 
     for index, message in enumerate(messages):
-        color = CHAT_COLORS.get(chat_types[index], 0x000000)
+
+        if chat_types[index] not in CHAT_COLORS.keys():
+            continue
+
+        color = CHAT_COLORS[chat_types[index]]
 
         embed = Embed(description=message,
                       timestamp=datetimes[index],
